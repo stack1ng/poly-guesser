@@ -11,6 +11,7 @@
 	"dependencies": {
 		"@ably-labs/models": "^0.0.4",
 		"@neondatabase/serverless": "^1.0.2",
+		"@radix-ui/react-dialog": "^1.1.15",
 		"@radix-ui/react-hover-card": "^1.1.15",
 		"@radix-ui/react-slot": "^1.2.4",
 		"@tanstack/react-query": "^5.90.9",
@@ -44,7 +45,8 @@
 		"superjson": "^2.2.5",
 		"tailwind-merge": "^3.4.0",
 		"undici": "^7.16.0",
-		"usehooks-ts": "^3.1.1"
+		"usehooks-ts": "^3.1.1",
+		"vaul": "^1.1.2"
 	},
 	"devDependencies": {
 		"@tailwindcss/postcss": "^4",

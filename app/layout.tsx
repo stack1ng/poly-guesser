@@ -33,7 +33,7 @@ export default function RootLayout({
 				className={`${limelight.variable} ${geistMono.variable} antialiased`}
 			>
 				<Toaster />
-				<div className="w-screen h-screen grid place-items-center">
+				<div className="w-screen h-screen grid place-items-center px-2">
 					<NuqsAdapter>
 						<TRPCReactProvider>{children}</TRPCReactProvider>
 					</NuqsAdapter>

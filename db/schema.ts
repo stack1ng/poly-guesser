@@ -33,6 +33,9 @@ export const games = pgTable(
 			.defaultNow()
 			.notNull(),
 
+		// todo: implement this
+		topic: text("topic"),
+
 		phase: gamePhase("phase").notNull(),
 		currentRoundIndex: integer("current_round_index"),
 	},

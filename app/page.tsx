@@ -1,9 +1,11 @@
+import { Logo } from "@/components/logo";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
 
 export default function Home() {
 	return (
 		<div className="flex flex-col text-5xl text-white gap-4">
+			<Logo />
 			<Link href="/game/new" prefetch={false}>
 				<Card className="grid place-items-center size-96 border-emerald-500 border bg-emerald-500/50 hover:bg-emerald-500 transition-colors hover:text-white">
 					New Game!

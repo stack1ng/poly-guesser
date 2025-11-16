@@ -9,6 +9,18 @@ import { cn } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
+import { useMediaQuery } from "usehooks-ts";
+import {
+	Drawer,
+	DrawerClose,
+	DrawerContent,
+	DrawerDescription,
+	DrawerFooter,
+	DrawerHeader,
+	DrawerTitle,
+	DrawerTrigger,
+} from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
 
 export default function LeaderboardLayout({
 	game,
@@ -17,9 +29,27 @@ export default function LeaderboardLayout({
 	game: ClientGameState;
 	children: React.ReactNode;
 }) {
+	const isMobile = useMediaQuery("(max-width: 768px)");
+
 	return (
 		<div className="relative size-full grid place-items-center">
-			<Leaderboard game={game} className="absolute top-0 right-0 w-56" />
+			{isMobile ? (
+				<Drawer>
+					<DrawerTrigger className="w-full">
+						<Button className="w-full h-18 text-3xl my-4">
+							Round {(game.currentRoundIndex ?? 0) + 1}/{game.rounds.length}
+						</Button>
+					</DrawerTrigger>
+					<DrawerContent>
+						<DrawerHeader>
+							<DrawerTitle>Leaderboard</DrawerTitle>
+						</DrawerHeader>
+						<Leaderboard game={game} className="mb-36" />
+					</DrawerContent>
+				</Drawer>
+			) : (
+				<Leaderboard game={game} className="absolute top-0 right-0 w-56" />
+			)}
 			{children}
 		</div>
 	);

@@ -163,7 +163,7 @@ export function QuestionPage({
 					</HoverCardContent>
 				</HoverCard>
 			</div>
-			<div className="grid grid-cols-2 gap-2 w-full">
+			<div className="grid md:grid-cols-2 gap-2 w-full">
 				{markets.slice(0, 4).map((market, i) => (
 					<OutcomeButton
 						key={market.id}
@@ -310,7 +310,7 @@ export function OutcomeButton({
 	return (
 		<Button
 			variant="outline"
-			className="font-mono h-36 flex items-center text-3xl justify-start relative disabled:opacity-100"
+			className="font-mono h-36 flex items-center text-xl justify-start relative disabled:opacity-100"
 			onClick={() => selectId(market.id)}
 			disabled={isLocked}
 		>
