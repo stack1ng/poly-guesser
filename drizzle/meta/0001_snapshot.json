@@ -1,6 +1,6 @@
 {
-  "id": "25eba8e1-b2d4-4893-9e93-98330aea7002",
-  "prevId": "b5524ed9-d4dd-47d6-91cb-c12125d465aa",
+  "id": "35b0e5fe-4ce4-423b-87f4-ea560c21b3bd",
+  "prevId": "5de5e7e7-6ed4-4619-b9a4-d64deadf77ed",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -88,6 +88,12 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "topic": {
+          "name": "topic",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "phase": {
           "name": "phase",
@@ -279,9 +285,9 @@
           "primaryKey": false,
           "notNull": false
         },
-        "chosen_event_ids_ranked": {
-          "name": "chosen_event_ids_ranked",
-          "type": "text[]",
+        "choice": {
+          "name": "choice",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": true
         },

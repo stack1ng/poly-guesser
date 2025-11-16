@@ -16,6 +16,7 @@ import {
 import { relations, sql } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { NANO_ID_LENGTH } from "@/lib/nanoidLength";
+import { SubmitChoiceEvent } from "@/lib/game/gameSync";
 
 export const gamePhase = pgEnum("game_phase", ["joinable", "in_play", "ended"]);
 export const playerState = pgEnum("player_state", ["ready", "not_ready"]);
@@ -76,7 +77,7 @@ export const roundChoices = pgTable(
 		roundGameId: nanoidField("round_game_id").references(() => games.id),
 		roundIndex: integer("round_index").notNull(),
 		playerId: nanoidField("player_id").references(() => players.id),
-		chosenEventIdsRanked: text("chosen_event_ids_ranked").array().notNull(),
+		choice: jsonb("choice").$type<SubmitChoiceEvent["choice"]>().notNull(),
 		scoreDelta: jsonb("score_delta").$type<ScoreDelta>().notNull(),
 	},
 	(table) => [

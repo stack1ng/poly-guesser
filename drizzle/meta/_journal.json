@@ -5,22 +5,15 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1763250339851,
-      "tag": "0000_giant_lizard",
+      "when": 1763284940849,
+      "tag": "0000_unknown_phantom_reporter",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1763250355661,
+      "when": 1763284952910,
       "tag": "0001_setup-ably-trigger",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1763280836496,
-      "tag": "0002_faithful_ravenous",
       "breakpoints": true
     }
   ]

@@ -4,17 +4,18 @@ import { db } from "@/db/client";
 import { outbox, roundChoices, rounds } from "@/db/schema";
 import {
 	gameChannel,
-	submitChosenRankingsEvent,
-	submitChosenRankingsEventSchema,
+	submitChoiceEvent,
+	submitChoiceEventSchema,
 } from "@/lib/game/gameSync";
 import { calculateScoreDelta } from "@/lib/scoring";
 import { and, eq } from "drizzle-orm";
+import { SubmitChoiceEvent } from "@/lib/game/gameSync";
 
-export async function submitChosenRankings(
+export async function submitChoice(
 	gameId: string,
 	roundIndex: number,
 	playerId: string,
-	chosenEventIdsRanked: string[]
+	choice: SubmitChoiceEvent["choice"]
 ) {
 	const [round] = await db
 		.select({
@@ -24,20 +25,17 @@ export async function submitChosenRankings(
 		.where(and(eq(rounds.gameId, gameId), eq(rounds.index, roundIndex)));
 	if (!round) throw new Error("Round not found");
 
-	const scoreDelta = await calculateScoreDelta(
-		round.eventSlug,
-		chosenEventIdsRanked
-	);
+	const scoreDelta = await calculateScoreDelta(round.eventSlug, choice);
 
 	await db.transaction(async (tx) => {
 		const outboxRow = tx.$with("outbox_row").as(() =>
 			tx.insert(outbox).values({
 				channel: gameChannel(gameId),
-				name: submitChosenRankingsEvent,
-				data: submitChosenRankingsEventSchema.parse({
+				name: submitChoiceEvent,
+				data: submitChoiceEventSchema.parse({
 					roundIndex,
 					playerId,
-					chosenEventIdsRanked,
+					choice,
 					scoreDelta,
 				}),
 			})
@@ -46,7 +44,7 @@ export async function submitChosenRankings(
 			roundGameId: gameId,
 			roundIndex: roundIndex,
 			playerId: playerId,
-			chosenEventIdsRanked,
+			choice,
 			scoreDelta,
 		});
 	});

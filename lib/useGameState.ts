@@ -22,8 +22,8 @@ import {
 	playerReadyEventSchema,
 	roundTimeChangeEvent,
 	roundTimeChangeEventSchema,
-	submitChosenRankingsEvent,
-	submitChosenRankingsEventSchema,
+	submitChoiceEvent,
+	submitChoiceEventSchema,
 } from "./game/gameSync";
 import { useTRPC, useTRPCClient } from "@/trpc/client";
 import { toast } from "sonner";
@@ -145,8 +145,8 @@ function handleGameMerge(
 			console.log("current round changed to", parsedData.roundIndex);
 			return newData;
 		}
-		case submitChosenRankingsEvent: {
-			const parsedData = submitChosenRankingsEventSchema.parse(eventData);
+		case submitChoiceEvent: {
+			const parsedData = submitChoiceEventSchema.parse(eventData);
 			const targetRound = newData.rounds.find(
 				(round) => round.index === parsedData.roundIndex
 			);

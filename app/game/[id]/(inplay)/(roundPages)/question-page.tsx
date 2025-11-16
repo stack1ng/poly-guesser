@@ -1,5 +1,5 @@
 import { ClientGameState } from "@/lib/game/state-types";
-import { type Event, type Market } from "polymarket-data";
+import { type Event } from "polymarket-data";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { use, useEffect, useMemo, useState } from "react";
@@ -8,23 +8,20 @@ import {
 	HoverCardContent,
 	HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { useRankedSelection } from "./selection-provider";
-import { BounceIn } from "@/components/bounce-in";
 import { toast } from "sonner";
-import { submitChosenRankings } from "./lockChoices";
+import { submitChoice } from "./lockChoice";
 import { useAuth } from "@/lib/auth/useAuth";
 import { useCurrentRound } from "@/lib/game/currentRound";
 import { Lock, LockOpen, Timer } from "lucide-react";
 import { DvdBounce } from "@/components/dvd-bounce";
 import { useCurrentPlayer } from "@/lib/game/useCurrentPlayer";
 import { readyPlayer } from "@/lib/game/readyAction";
-import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { shuffleWithSeed } from "@/lib/shuffleWithSeed";
 import Link from "next/link";
-import { TypeWrittenText } from "@/components/TypeWrittenText";
-import { maxSelectionSize } from "@/lib/maxSelectionSize";
 import { getOpenEventMarkets } from "@/lib/getEventMarkets";
+import { MultiMarketAnswerModal } from "./multiMarketAnswerModal";
+import { SingleMarketAnswerModal } from "./singleMarketAnswerModal";
 
 export function QuestionPage({
 	game,
@@ -33,7 +30,6 @@ export function QuestionPage({
 	game: ClientGameState;
 	eventPromise: Promise<Event>;
 }) {
-	console.log("game", game);
 	const event = use(eventPromise);
 	// not quite a safe assumption... but it's ok for now
 	const markets = shuffleWithSeed(
@@ -45,14 +41,12 @@ export function QuestionPage({
 	if (!markets) throw new Error("Markets not found");
 	console.log("markets", event.markets);
 
-	const { playerId } = useAuth();
+	const isSingleProbabilityMarket = useMemo(
+		() => markets.length === 1,
+		[markets]
+	);
 
-	const { selectedIdsRanked, setSelectedIdsRanked } = useRankedSelection();
-	useEffect(() => {
-		// clear the selected ids when the round changes
-		setSelectedIdsRanked([]);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [game.currentRoundIndex]);
+	const { playerId } = useAuth();
 
 	const currentRound = useCurrentRound(game);
 	const [percentLeft, setPercentLeft] = useState(0);
@@ -76,7 +70,7 @@ export function QuestionPage({
 		const timeout = setTimeout(() => {
 			clearInterval(interval);
 			setPercentLeft(0);
-			submitChosenRankings(game.id, game.currentRoundIndex!, playerId, []);
+			submitChoice(game.id, game.currentRoundIndex!, playerId, []);
 		}, endTime.getTime() - Date.now());
 		return () => {
 			clearTimeout(timeout);
@@ -86,17 +80,17 @@ export function QuestionPage({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [JSON.stringify(currentRound), game.currentRoundIndex, game.id, playerId]);
 
-	const lockedChoices = useMemo(() => {
+	const lockedChoice = useMemo(() => {
 		return currentRound?.choices.find((choice) => choice.playerId === playerId);
 	}, [currentRound?.choices, playerId]);
 
 	const isLocked = useMemo(() => {
-		return lockedChoices !== undefined;
-	}, [lockedChoices]);
+		return lockedChoice !== undefined;
+	}, [lockedChoice]);
 
-	const answersTimedOut = useMemo(() => {
-		return lockedChoices && Object.keys(lockedChoices?.scoreDelta).length === 0;
-	}, [lockedChoices]);
+	const answerTimedOut = useMemo(() => {
+		return lockedChoice && Object.keys(lockedChoice?.scoreDelta).length === 0;
+	}, [lockedChoice]);
 
 	const allPlayersLocked = useMemo(() => {
 		return game.players.every((player) =>
@@ -104,13 +98,7 @@ export function QuestionPage({
 		);
 	}, [game, currentRound?.choices]);
 
-	const pickCount = useMemo(
-		() => Math.min(maxSelectionSize, markets.length),
-		[markets.length]
-	);
-	const lockable = useMemo(() => {
-		return selectedIdsRanked.length === pickCount && !isLocked;
-	}, [isLocked, pickCount, selectedIdsRanked.length]);
+	const [lockFn, setLockFn] = useState<() => Promise<void>>();
 
 	const thisPlayer = useCurrentPlayer(game);
 	if (!thisPlayer) {
@@ -154,65 +142,46 @@ export function QuestionPage({
 								event.title
 							)}
 						</h1>
-						<h2 className="text-muted-foreground font-mono text-lg">
-							Select your top {pickCount} picks
-						</h2>
 					</HoverCardTrigger>
 					<HoverCardContent className="w-96">
 						<p className="font-mono text-xs">{event.description}</p>
 					</HoverCardContent>
 				</HoverCard>
 			</div>
-			<div className="grid md:grid-cols-2 gap-2 w-full">
-				{markets.slice(0, 4).map((market, i) => (
-					<OutcomeButton
-						key={market.id}
-						market={market}
-						isLocked={isLocked}
-						displayedDelta={
-							allPlayersLocked
-								? lockedChoices?.scoreDelta?.[market.id]
-								: undefined
-						}
-						index={i}
-						displayedSolution={
-							market.lastTradePrice && allPlayersLocked
-								? `${(market.lastTradePrice * 100).toFixed(2)}%`
-								: undefined
-						}
-					/>
-				))}
-			</div>
-			<Button
-				className="w-full bg-destructive/50 hover:bg-destructive border border-destructive"
-				onClick={() => setSelectedIdsRanked([])}
-				disabled={selectedIdsRanked.length === 0 || isLocked}
-			>
-				Reset
-			</Button>
+			{isSingleProbabilityMarket ? (
+				<SingleMarketAnswerModal
+					game={game}
+					markets={markets}
+					isLocked={isLocked}
+					allPlayersLocked={allPlayersLocked}
+					scoreDelta={lockedChoice?.scoreDelta}
+					setLockFn={setLockFn}
+				/>
+			) : (
+				<MultiMarketAnswerModal
+					game={game}
+					markets={markets}
+					isLocked={isLocked}
+					allPlayersLocked={allPlayersLocked}
+					scoreDelta={lockedChoice?.scoreDelta}
+					setLockFn={setLockFn}
+				/>
+			)}
 			<Button
 				className={cn(
 					"group relative w-full h-24 text-2xl border border-sky-500 overflow-hidden transition-colors",
 					{
-						"bg-destructive/50 border-destructive": answersTimedOut,
+						"bg-destructive/50 border-destructive": answerTimedOut,
 					}
 				)}
 				onClick={() =>
-					toast.promise(
-						submitChosenRankings(
-							game.id,
-							game.currentRoundIndex!,
-							playerId,
-							selectedIdsRanked
-						),
-						{
-							loading: "Locking in choices...",
-							success: "Choices locked in!",
-							error: "Failed to lock in choices",
-						}
-					)
+					toast.promise(lockFn!(), {
+						loading: "Locking in choices...",
+						success: "Choices locked in!",
+						error: "Failed to lock in choices",
+					})
 				}
-				disabled={!lockable}
+				disabled={!lockFn || isLocked}
 			>
 				<div
 					className="absolute inset-y-0 left-0 bg-sky-500/50 group-hover:bg-sky-500 transition-[width] duration-1000"
@@ -220,11 +189,11 @@ export function QuestionPage({
 				/>
 				<span
 					className={cn("relative z-10 flex items-center gap-2", {
-						"animate-bounce": lockable,
+						"animate-bounce": !!lockFn && !isLocked,
 					})}
 				>
-					{lockedChoices ? (
-						answersTimedOut ? (
+					{lockedChoice ? (
+						answerTimedOut ? (
 							<>
 								<Timer className="size-4" />
 								You were too slow...
@@ -263,97 +232,5 @@ export function QuestionPage({
 				)}
 			</Button>
 		</div>
-	);
-}
-
-const randomRotationRange = 25;
-function ordinal(n: number) {
-	const pr = new Intl.PluralRules("en", { type: "ordinal" });
-	const suffixes: Record<Intl.LDMLPluralRule, string> = {
-		zero: "th",
-		one: "st",
-		two: "nd",
-		few: "rd",
-		many: "th",
-		other: "th",
-	};
-	return `${n}${suffixes[pr.select(n)]}`;
-}
-
-export function OutcomeButton({
-	market,
-	isLocked,
-	displayedDelta,
-	displayedSolution,
-	index,
-}: {
-	market: Market;
-	isLocked: boolean;
-	displayedDelta?: number;
-	displayedSolution?: string;
-	index: number;
-}) {
-	const { selectId, selectedIdsRanked } = useRankedSelection();
-	const selectionRank = useMemo(
-		() => selectedIdsRanked.indexOf(market.id),
-		[market.id, selectedIdsRanked]
-	);
-
-	const randomRotation = useMemo(
-		// eslint-disable-next-line react-hooks/purity
-		() => Math.random() * randomRotationRange - randomRotationRange / 2,
-		[]
-	);
-
-	const scoreRotation = 5;
-
-	return (
-		<Button
-			variant="outline"
-			className="font-mono h-36 flex items-center text-xl justify-start relative disabled:opacity-100"
-			onClick={() => selectId(market.id)}
-			disabled={isLocked}
-		>
-			{selectionRank !== -1 && (
-				<div
-					className="absolute top-4 right-4"
-					style={{ transform: `rotate(${randomRotation}deg)` }}
-				>
-					<BounceIn className="text-4xl">{ordinal(selectionRank + 1)}</BounceIn>
-				</div>
-			)}
-			{displayedDelta !== undefined && (
-				<motion.div
-					initial={{ opacity: 0, scale: 5, rotate: scoreRotation + 90 }}
-					animate={{ opacity: 1, scale: 1, rotate: scoreRotation }}
-					transition={{
-						delay: index * 0.4,
-						duration: 0.2,
-					}}
-					className={cn(
-						"absolute bottom-4 right-4 text-6xl font-extrabold text-muted-foreground",
-						{
-							"text-green-500": displayedDelta > 0,
-							"text-red-500": displayedDelta < 0,
-						}
-					)}
-				>
-					{displayedDelta > 0 ? "+" : ""}
-					{displayedDelta}
-				</motion.div>
-			)}
-			<div className="absolute bottom-3 left-0 w-full text-center text-base text-sky-500">
-				<TypeWrittenText>{displayedSolution ?? ""}</TypeWrittenText>
-			</div>
-			<Image
-				className="rounded-md"
-				draggable={false}
-				src={market.image ?? ""}
-				alt={market.question ?? ""}
-				width={75}
-				height={75}
-			/>
-			{market.groupItemTitle ?? market.question}
-		</Button>
 	);
 }

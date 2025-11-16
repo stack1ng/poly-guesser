@@ -10,6 +10,7 @@ CREATE TABLE "game_players" (
 CREATE TABLE "games" (
 	"id" varchar(21) PRIMARY KEY NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"topic" text,
 	"phase" "game_phase" NOT NULL,
 	"current_round_index" integer,
 	CONSTRAINT "current_round_index_if_phase_in_play" CHECK ("games"."phase" <> 'in_play' OR "games"."current_round_index" IS NOT NULL)
@@ -42,7 +43,7 @@ CREATE TABLE "round_choices" (
 	"round_game_id" varchar(21),
 	"round_index" integer NOT NULL,
 	"player_id" varchar(21),
-	"chosen_event_ids_ranked" text[] NOT NULL,
+	"choice" jsonb NOT NULL,
 	"score_delta" jsonb NOT NULL,
 	CONSTRAINT "round_choices_round_game_id_round_index_player_id_pk" PRIMARY KEY("round_game_id","round_index","player_id")
 );

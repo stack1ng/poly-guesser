@@ -64,10 +64,11 @@ export const roundTimeChangeEventSchema = z.object({
 	endTime: z.coerce.date(),
 });
 
-export const submitChosenRankingsEvent = "submitChosenRankings";
-export const submitChosenRankingsEventSchema = z.object({
+export const submitChoiceEvent = "submitChosenRankings";
+export const submitChoiceEventSchema = z.object({
 	roundIndex: z.number(),
 	playerId: z.string(),
-	chosenEventIdsRanked: z.array(z.string()),
+	choice: z.union([z.array(z.string()), z.number()]),
 	scoreDelta: z.record(z.string(), z.number()),
 });
+export type SubmitChoiceEvent = z.infer<typeof submitChoiceEventSchema>;

@@ -24,6 +24,7 @@ export default async function NewGame() {
 					index: i,
 					gameId: game.id,
 					eventSlug: event.slug!,
+					// eventSlug: "xi-jinping-out-before-2027",
 				})
 			)
 		);

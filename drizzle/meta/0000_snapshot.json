@@ -1,5 +1,5 @@
 {
-  "id": "b5524ed9-d4dd-47d6-91cb-c12125d465aa",
+  "id": "5de5e7e7-6ed4-4619-b9a4-d64deadf77ed",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -88,6 +88,12 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "topic": {
+          "name": "topic",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "phase": {
           "name": "phase",
@@ -279,9 +285,9 @@
           "primaryKey": false,
           "notNull": false
         },
-        "chosen_event_ids_ranked": {
-          "name": "chosen_event_ids_ranked",
-          "type": "text[]",
+        "choice": {
+          "name": "choice",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": true
         },
