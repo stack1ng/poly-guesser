@@ -150,6 +150,7 @@ export function QuestionPage({
 			</div>
 			{isSingleProbabilityMarket ? (
 				<SingleMarketAnswerModal
+					key={game.currentRoundIndex}
 					game={game}
 					markets={markets}
 					isLocked={isLocked}
@@ -159,6 +160,7 @@ export function QuestionPage({
 				/>
 			) : (
 				<MultiMarketAnswerModal
+					key={game.currentRoundIndex}
 					game={game}
 					markets={markets}
 					isLocked={isLocked}
