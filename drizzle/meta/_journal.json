@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1763250339851,
+      "tag": "0000_giant_lizard",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1763250355661,
+      "tag": "0001_setup-ably-trigger",
+      "breakpoints": true
+    }
+  ]
+}
