@@ -1,5 +1,6 @@
 import { memo, ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { BounceIn } from "../bounce-in";
+import { createPortal } from "react-dom";
 
 export const ReadySetGo = memo(function ReadySetGo({
 	targetTime,
@@ -13,14 +14,12 @@ export const ReadySetGo = memo(function ReadySetGo({
 		[targetTime]
 	);
 
-	const [displayContent, setDisplayContent] = useState<ReactNode>(
+	const [overlay, setOverlay] = useState<ReactNode>(
 		durationUntilTarget > 0 ? (
 			<BounceIn key="ready" className="text-6xl">
 				Ready
 			</BounceIn>
-		) : (
-			children
-		)
+		) : undefined
 	);
 
 	const hasPlayed = useRef(false);
@@ -30,21 +29,21 @@ export const ReadySetGo = memo(function ReadySetGo({
 
 		if (durationUntilTarget > 0) {
 			const t1 = setTimeout(() => {
-				setDisplayContent(
+				setOverlay(
 					<BounceIn key="set" className="text-6xl">
 						Set
 					</BounceIn>
 				);
 			}, durationUntilTarget * (1 / 3));
 			const t2 = setTimeout(() => {
-				setDisplayContent(
+				setOverlay(
 					<BounceIn key="go" className="text-6xl text-red-500 animate-alarm">
 						Go!!
 					</BounceIn>
 				);
 			}, durationUntilTarget * (2 / 3));
 			const t3 = setTimeout(() => {
-				setDisplayContent(children);
+				setOverlay(undefined);
 			}, durationUntilTarget);
 
 			// since this only plays once, we don't need to clean up
@@ -54,11 +53,20 @@ export const ReadySetGo = memo(function ReadySetGo({
 			// 	clearTimeout(t3);
 			// };
 		} else {
-			setDisplayContent(children);
+			setOverlay(undefined);
 		}
 	}, [children, durationUntilTarget, targetTime]);
 
 	return (
-		<div className="grid place-items-center size-full">{displayContent}</div>
+		<div className="relative">
+			{children}
+			{overlay &&
+				createPortal(
+					<div className="absolute inset-0 grid place-items-center size-full bg-background">
+						{overlay}
+					</div>,
+					document.body
+				)}
+		</div>
 	);
 });

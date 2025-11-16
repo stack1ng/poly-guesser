@@ -30,7 +30,7 @@ export function InPlay({ game }: { game: ClientGameState }) {
 		console.error("Current round not found");
 		return null;
 	}
-	// throw new Error("Current round should have a start time at this point");
+	console.log("in-play game", game);
 	return (
 		<RankedSelectionProvider>
 			<ReadySetGo targetTime={startTime}>
