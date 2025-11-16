@@ -14,8 +14,13 @@ export const metadata: Metadata = {
 	description: "Start a new PolyGuessr game.",
 };
 
-export default async function NewGame() {
-	const events = await pickRandomEvents(roundCount);
+export default async function NewGame({
+	searchParams,
+}: {
+	searchParams: Promise<{ topic?: string }>;
+}) {
+	const { topic } = await searchParams;
+	const events = await pickRandomEvents(roundCount, topic);
 	const game = await db.transaction(async (tx) => {
 		const [game] = await tx
 			.insert(games)

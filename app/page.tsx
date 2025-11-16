@@ -3,16 +3,38 @@
 import { Logo } from "@/components/logo";
 import PolyMarketLogo from "@/components/polymarket-logo";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import Link, { useLinkStatus } from "next/link";
+import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 
 export default function Home() {
+	const [gameTopic, setGameTopic] = useState("");
+
+	const newGameHref = useMemo(() => {
+		let createUrl = `/game/new`;
+		if (gameTopic) createUrl += `?topic=${gameTopic}`;
+		return createUrl;
+	}, [gameTopic]);
+
 	return (
 		<div className="flex flex-col text-5xl text-white gap-4 font-sans">
 			<Logo />
-			<Link href="/game/new" prefetch={false}>
-				<NewGameCard />
-			</Link>
+			<div className="flex flex-col gap-2">
+				<Link href={newGameHref} prefetch={false}>
+					<NewGameCard />
+				</Link>
+				<Input
+					id="gameTopic"
+					className="font-mono text-foreground focus-visible:ring-0 focus-visible:ring-offset-0 bg-background/50 group-hover:bg-background transition-colors"
+					placeholder="(optional) Enter a topic"
+					required
+					value={gameTopic}
+					onChange={(e) => setGameTopic(e.target.value)}
+					onClick={(e) => e}
+				/>
+			</div>
 			<Link href="/game/join" prefetch={true}>
 				<Card className="grid place-items-center h-24 w-full border-sky-500 border bg-sky-500/50 hover:bg-sky-500 transition-colors hover:text-white">
 					Join Game
