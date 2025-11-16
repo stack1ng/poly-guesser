@@ -11,15 +11,17 @@ import LeaderboardLayout from "./(leaderboard)/leaderboardLayout";
 export function GameRouter({
 	gameId,
 	initialStatePromise,
+	usePolling,
 }: {
 	gameId: string;
 	initialStatePromise: Promise<{
 		clientGameState: ClientGameState;
 		sequenceId: number;
 	}>;
+	usePolling: boolean;
 }) {
 	const initialState = use(initialStatePromise);
-	const game = useGameState(gameId, initialState.clientGameState, true);
+	const game = useGameState(gameId, initialState.clientGameState, usePolling);
 	console.log("game-router game", game);
 
 	let content: React.ReactNode;

@@ -2,12 +2,7 @@
 import { useMemo } from "react";
 import { ClientGameState } from "./game/state-types";
 import { useModelState } from "./realtime/useModelState";
-import {
-	ConfirmedEvent,
-	ModelSpec,
-	OptimisticEvent,
-	SyncReturnType,
-} from "@ably-labs/models";
+import { ModelSpec, SyncReturnType } from "@ably-labs/models";
 import {
 	batchGameEvents,
 	batchGameEventsSchema,
