@@ -22,7 +22,8 @@ export function Lobby({ game }: { game: ClientGameState }) {
 		<div className="text-5xl grid gap-4 place-items-center">
 			<p className="text-lg">Scan this to join!</p>
 			<QRCode
-				value={`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}/game/join?gameId=${game.id}`}
+				size={256}
+				value={`${location.origin}/game/join?gameId=${game.id}`}
 				title="Join this PolyGuesser game"
 			/>
 			{game.players.length} players in game
