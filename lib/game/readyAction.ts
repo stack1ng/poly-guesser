@@ -9,6 +9,7 @@ import {
 	gameCurrentRoundChangeEventSchema,
 	gamePhaseChangeEvent,
 	gamePhaseChangeEventSchema,
+	makeBatchGameEvents,
 	playerReadyEvent as playerReadyChangeEvent,
 	playerReadyEventSchema,
 	roundTimeChangeEvent,
@@ -125,28 +126,24 @@ function startRound(
 		roundEndTime = new Date(roundStartTime.getTime() + roundDuration);
 
 	const outboxRow = tx.$with("start_round_outbox_row").as(() =>
-		tx.insert(outbox).values([
-			{
-				channel: gameChannel(gameId),
-				name: batchGameEvents,
-				data: batchGameEventsSchema.parse([
-					{
-						name: roundTimeChangeEvent,
-						data: roundTimeChangeEventSchema.parse({
-							roundIndex: index,
-							startTime: roundStartTime,
-							endTime: roundEndTime,
-						}),
-					},
-					{
-						name: gameCurrentRoundChangeEvent,
-						data: gameCurrentRoundChangeEventSchema.parse({
-							roundIndex: index,
-						}),
-					},
-				]),
-			},
-		])
+		tx.insert(outbox).values(
+			makeBatchGameEvents(gameId, [
+				{
+					name: roundTimeChangeEvent,
+					data: roundTimeChangeEventSchema.parse({
+						roundIndex: index,
+						startTime: roundStartTime,
+						endTime: roundEndTime,
+					}),
+				},
+				{
+					name: gameCurrentRoundChangeEvent,
+					data: gameCurrentRoundChangeEventSchema.parse({
+						roundIndex: index,
+					}),
+				},
+			])
+		)
 	);
 	const updateRoundTimes = tx.$with("update_round_times").as(() =>
 		tx
@@ -181,26 +178,22 @@ async function handleJoinableAllReady(
 	const outboxRow = tx.$with("outbox_row").as(() =>
 		tx
 			.insert(outbox)
-			.values([
-				{
-					channel: gameChannel(gameId),
-					name: batchGameEvents,
-					data: batchGameEventsSchema.parse([
-						{
-							name: gameCurrentRoundChangeEvent,
-							data: gameCurrentRoundChangeEventSchema.parse({
-								roundIndex: 0,
-							}),
-						},
-						{
-							name: gamePhaseChangeEvent,
-							data: gamePhaseChangeEventSchema.parse({
-								phase: "in_play",
-							}),
-						},
-					]),
-				},
-			])
+			.values(
+				makeBatchGameEvents(gameId, [
+					{
+						name: gameCurrentRoundChangeEvent,
+						data: gameCurrentRoundChangeEventSchema.parse({
+							roundIndex: 0,
+						}),
+					},
+					{
+						name: gamePhaseChangeEvent,
+						data: gamePhaseChangeEventSchema.parse({
+							phase: "in_play",
+						}),
+					},
+				])
+			)
 			.returning({
 				sequenceId: outbox.sequenceId,
 			})
@@ -242,10 +235,8 @@ async function handleInPlayAllReady(
 
 	const gameEnded = currentRoundIndex >= gameRounds.length;
 	const roundChangeOutboxRow = tx.$with("round_change_outbox_row").as(() =>
-		tx.insert(outbox).values({
-			channel: gameChannel(gameId),
-			name: batchGameEvents,
-			data: batchGameEventsSchema.parse([
+		tx.insert(outbox).values(
+			makeBatchGameEvents(gameId, [
 				{
 					name: gameCurrentRoundChangeEvent,
 					data: gameCurrentRoundChangeEventSchema.parse({
@@ -258,8 +249,8 @@ async function handleInPlayAllReady(
 						phase: gameEnded ? "ended" : "in_play",
 					}),
 				},
-			]),
-		})
+			])
+		)
 	);
 
 	if (gameEnded) {

@@ -20,6 +20,7 @@ export function GameRouter({
 }) {
 	const initialState = use(initialStatePromise);
 	const game = useGameState(gameId, initialState.clientGameState, false);
+	console.log("game-router game", game);
 
 	let content: React.ReactNode;
 	switch (game.phase) {
@@ -30,8 +31,7 @@ export function GameRouter({
 			content = <InPlay game={game} />;
 			break;
 		case "ended":
-			content = <Ended game={game} />;
-			break;
+			return <Ended game={game} />;
 		default:
 			throw new Error(`Unknown game phase: ${game.phase}`);
 	}

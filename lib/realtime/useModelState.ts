@@ -2,7 +2,6 @@ import {
 	ConfirmedEvent,
 	ExtractData,
 	ModelSpec,
-	ModelStateChange,
 	OptimisticEvent,
 	SubscriptionCallback,
 	SyncReturnType,
@@ -48,6 +47,7 @@ export function useModelState<S extends () => SyncReturnType<unknown>>(
 	// useWhatChanged([initialSyncParams, spec], "initialSyncParams, spec");
 
 	const [state, setState] = useState<ExtractData<S>>(initialState);
+	console.log("useModelState state", state);
 	useEffect(() => {
 		// model.on((stateChange) => {
 		// 	console.log("stateChange", stateChange);

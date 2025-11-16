@@ -1,10 +1,13 @@
+import { outbox } from "@/db/schema";
+import { InferInsertModel } from "drizzle-orm";
 import { z } from "zod";
 
 export function gameChannel(gameId: string) {
 	return `game:${gameId}`;
 }
 
-// a way to gaurantee that events are applied in the correct order
+// a way to gaurantee that events are applied in the correct order...
+// however ably livesync seems to have silent message size limits... so we will disable for now
 export const batchGameEvents = "batchGameEvents";
 export const batchGameEventsSchema = z.array(
 	z.object({
@@ -12,6 +15,26 @@ export const batchGameEventsSchema = z.array(
 		data: z.unknown(),
 	})
 );
+const batchEnabled = false;
+export function makeBatchGameEvents(
+	gameId: string,
+	events: { name: string; data: unknown }[]
+): InferInsertModel<typeof outbox>[] {
+	if (!batchEnabled)
+		return events.map((event) => ({
+			channel: gameChannel(gameId),
+			name: event.name,
+			data: event.data,
+		}));
+
+	return [
+		{
+			channel: gameChannel(gameId),
+			name: batchGameEvents,
+			data: batchGameEventsSchema.parse(events),
+		},
+	];
+}
 
 export const playerJoinEvent = "playerJoin";
 export const playerJoinEventSchema = z.object({

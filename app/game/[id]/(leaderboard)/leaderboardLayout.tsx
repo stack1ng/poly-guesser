@@ -8,7 +8,6 @@ import { getPlayerScore, usePlayerScore } from "@/lib/game/usePlayerScore";
 import { cn } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
 import { useQuery } from "@tanstack/react-query";
-import { CircleCheck } from "lucide-react";
 import { useMemo } from "react";
 
 export default function LeaderboardLayout({
@@ -20,16 +19,13 @@ export default function LeaderboardLayout({
 }) {
 	return (
 		<div className="relative size-full grid place-items-center">
-			<Leaderboard
-				game={game}
-				className="absolute top-0 right-0 w-56 border m-4 divide-y rounded-lg"
-			/>
+			<Leaderboard game={game} className="absolute top-0 right-0 w-56" />
 			{children}
 		</div>
 	);
 }
 
-function Leaderboard({
+export function Leaderboard({
 	game,
 	className,
 }: {
@@ -37,7 +33,7 @@ function Leaderboard({
 	className?: string;
 }) {
 	return (
-		<ul className={className}>
+		<ul className={cn("border m-4 divide-y rounded-lg", className)}>
 			{game.currentRoundIndex !== null && (
 				<div className="text-center text-3xl">
 					{game.phase === "in_play"

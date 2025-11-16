@@ -21,6 +21,7 @@ import { readyPlayer } from "@/lib/game/readyAction";
 import { motion } from "motion/react";
 import seedrandom from "seedrandom";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 function shuffleWithSeed<T>(array: T[], seed: string): T[] {
 	const rng = seedrandom(seed);
@@ -60,11 +61,10 @@ export function QuestionPage({
 	}, [game.currentRoundIndex]);
 
 	const currentRound = useCurrentRound(game);
-	if (!currentRound) throw new Error("Current round not found");
 
 	const lockedChoices = useMemo(() => {
-		return currentRound.choices.find((choice) => choice.playerId === playerId);
-	}, [currentRound.choices, playerId]);
+		return currentRound?.choices.find((choice) => choice.playerId === playerId);
+	}, [currentRound?.choices, playerId]);
 
 	const isLocked = useMemo(() => {
 		return lockedChoices !== undefined;
@@ -72,18 +72,25 @@ export function QuestionPage({
 
 	const allPlayersLocked = useMemo(() => {
 		return game.players.every((player) =>
-			currentRound.choices.some((choice) => choice.playerId === player.id)
+			currentRound?.choices.some((choice) => choice.playerId === player.id)
 		);
-	}, [game, currentRound.choices]);
-
-	const thisPlayer = useCurrentPlayer(game);
-	if (!thisPlayer) throw new Error("Player not found: " + playerId);
+	}, [game, currentRound?.choices]);
 
 	const lockable = useMemo(() => {
 		return selectedIdsRanked.length === markets.length && !isLocked;
 	}, [isLocked, markets.length, selectedIdsRanked.length]);
 
-	console.log("debug", allPlayersLocked, isLocked, currentRound);
+	const router = useRouter();
+
+	const thisPlayer = useCurrentPlayer(game);
+	if (!thisPlayer) {
+		console.error("Player not found: " + playerId);
+		return null;
+	}
+	if (!currentRound) {
+		console.error("Current round not found");
+		return null;
+	}
 
 	return (
 		<div className="flex flex-col items-center justify-center gap-4">
@@ -133,7 +140,7 @@ export function QuestionPage({
 							game.currentRoundIndex!,
 							playerId,
 							selectedIdsRanked
-						),
+						).then(() => router.refresh()),
 						{
 							loading: "Locking in choices...",
 							success: "Choices locked in!",
@@ -165,11 +172,14 @@ export function QuestionPage({
 				disabled={!(allPlayersLocked && thisPlayer.state !== "ready")}
 				className="w-full h-24 text-2xl p-0"
 				onClick={() => {
-					toast.promise(readyPlayer(game.id, thisPlayer.id), {
-						loading: "Readying up...",
-						success: "Ready for next round!",
-						error: "Failed to ready up",
-					});
+					toast.promise(
+						readyPlayer(game.id, thisPlayer.id).then(() => router.refresh()),
+						{
+							loading: "Readying up...",
+							success: "Ready for next round!",
+							error: "Failed to ready up",
+						}
+					);
 				}}
 			>
 				{allPlayersLocked && thisPlayer.state !== "ready" ? (
@@ -177,7 +187,7 @@ export function QuestionPage({
 				) : isLocked ? (
 					<DvdBounce>Waiting for other players...</DvdBounce>
 				) : (
-					"Lock in your choices"
+					"Lock in your choices first"
 				)}
 			</Button>
 		</div>
