@@ -111,7 +111,7 @@ export async function readyPlayer(gameId: string, playerId: string) {
 	});
 }
 
-const roundDuration = 20000;
+const roundDuration = 15000;
 
 function startRound(
 	tx: PgTransaction<

@@ -19,7 +19,9 @@ export function InPlay({ game }: { game: ClientGameState }) {
 						slug: currentRound.details.eventSlug,
 				  })
 				: undefined,
-		[currentRound, trpcClient]
+		// when polling, we need to have a stable dependency array somehow
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[JSON.stringify(currentRound), trpcClient]
 	);
 
 	const startTime = currentRound?.details.startTime;
@@ -38,7 +40,7 @@ export function InPlay({ game }: { game: ClientGameState }) {
 				<ErrorBoundary
 					fallbackRender={({ error }) => <div>Error: {error.message}</div>}
 				>
-					<Suspense fallback={<div>Loading...</div>}>
+					<Suspense fallback={<div>Loading (0)...</div>}>
 						{eventPromise && (
 							<QuestionPage game={game} eventPromise={eventPromise} />
 						)}

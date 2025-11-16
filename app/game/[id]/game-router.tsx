@@ -19,7 +19,7 @@ export function GameRouter({
 	}>;
 }) {
 	const initialState = use(initialStatePromise);
-	const game = useGameState(gameId, initialState.clientGameState, false);
+	const game = useGameState(gameId, initialState.clientGameState, true);
 	console.log("game-router game", game);
 
 	let content: React.ReactNode;

@@ -123,7 +123,7 @@ function PlayerLeaderboardRow({
 				>
 					<TypeWrittenText>
 						{isLoadingName
-							? "Loading..."
+							? "Loading (3)..."
 							: errorName
 							? "Error loading name"
 							: player.id === thisPlayerId

@@ -9,7 +9,7 @@ export default async function GamePage({
 }) {
 	const { id } = await params;
 	return (
-		<Suspense fallback={<div>Loading...</div>}>
+		<Suspense fallback={<div>Loading (1)...</div>}>
 			<GameRouter gameId={id} initialStatePromise={getClientGameState(id)} />
 		</Suspense>
 	);

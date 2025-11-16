@@ -57,10 +57,14 @@ export function QuestionPage({
 	const currentRound = useCurrentRound(game);
 	const [percentLeft, setPercentLeft] = useState(0);
 	useEffect(() => {
+		if (currentRound?.choices.some((choice) => choice.playerId === playerId))
+			return;
+
 		const endTime = currentRound?.details.endTime;
 		if (!endTime) return;
-
-		const totalDuration = endTime.getTime() - Date.now();
+		const startTime = currentRound?.details.startTime;
+		if (!startTime) return;
+		const totalDuration = endTime.getTime() - startTime.getTime();
 		const computePercentLeft = () => {
 			const timeLeft = endTime.getTime() - Date.now();
 			setPercentLeft(timeLeft / totalDuration);
@@ -78,7 +82,9 @@ export function QuestionPage({
 			clearTimeout(timeout);
 			clearInterval(interval);
 		};
-	}, [currentRound, game.currentRoundIndex, game.id, playerId]);
+		// when polling, we need to have a stable dependency array somehow
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [JSON.stringify(currentRound), game.currentRoundIndex, game.id, playerId]);
 
 	const lockedChoices = useMemo(() => {
 		return currentRound?.choices.find((choice) => choice.playerId === playerId);
