@@ -67,7 +67,12 @@ export function Leaderboard({
 	className?: string;
 }) {
 	return (
-		<ul className={cn("border m-4 divide-y rounded-lg", className)}>
+		<ul
+			className={cn(
+				"border m-4 divide-y rounded-lg max-h-96 overflow-y-auto",
+				className
+			)}
+		>
 			{game.currentRoundIndex !== null && (
 				<div className="text-center text-3xl font-sans">
 					{game.phase === "in_play"
