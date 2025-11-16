@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { db } from "@/db/client";
 import { games, rounds } from "@/db/schema";
 import { polymarketData } from "@/lib/polymarketData";
@@ -7,6 +8,11 @@ import { redirect } from "next/navigation";
 
 const roundCount = 5;
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+	title: "Create Game",
+	description: "Start a new PolyGuessr game.",
+};
 
 export default async function NewGame() {
 	const events = await pickRandomEvents(roundCount);
