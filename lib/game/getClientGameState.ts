@@ -1,4 +1,4 @@
-import { db } from "@/db/client";
+import { db, readDb } from "@/db/client";
 import { games, outbox } from "@/db/schema";
 import { TRPCError } from "@trpc/server";
 import { desc, eq } from "drizzle-orm";
@@ -6,7 +6,7 @@ import { gameChannel } from "./gameSync";
 import { ClientGameState } from "./state-types";
 
 export async function getClientGameState(gameId: string) {
-	const { game, sequenceId } = await db.transaction(async (tx) => {
+	const { game, sequenceId } = await readDb.transaction(async (tx) => {
 		const game = await tx.query.games.findFirst({
 			where: eq(games.id, gameId),
 			with: {

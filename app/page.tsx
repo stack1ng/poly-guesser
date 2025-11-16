@@ -1,6 +1,7 @@
 "use client";
 
 import { Logo } from "@/components/logo";
+import PolyMarketLogo from "@/components/polymarket-logo";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import Link, { useLinkStatus } from "next/link";
@@ -17,6 +18,12 @@ export default function Home() {
 					Join Game
 				</Card>
 			</Link>
+			<label className="text-foreground font-mono text-sm mx-auto">
+				Powered by:
+				<Link href="https://polymarket.com" target="_blank">
+					<PolyMarketLogo className="h-16 bg-[#2E5CFF] fill-white rounded-lg p-3" />
+				</Link>
+			</label>
 		</div>
 	);
 }

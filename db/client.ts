@@ -10,3 +10,13 @@ if (!connectionString) {
 
 const neon = new Pool({ connectionString });
 export const db = drizzle(neon, { schema });
+
+const readConnectionString = process.env.READ_DATABASE_URL;
+
+if (!readConnectionString) {
+	throw new Error("READ_DATABASE_URL is not set");
+}
+
+const readPool = new Pool({ connectionString: readConnectionString });
+
+export const readDb = drizzle(readPool, { schema });
