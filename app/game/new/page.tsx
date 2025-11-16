@@ -6,7 +6,7 @@ import { shuffleWithSeed } from "@/lib/shuffleWithSeed";
 import { InferInsertModel } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
-const roundCount = 5;
+const roundCount = 3;
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
@@ -55,6 +55,7 @@ export default async function NewGame({
 }
 
 async function pickRandomEvents(sampleSize: number, topic = " ") {
+	console.log("picking random events", topic);
 	const { events } = await polymarketData.gamma.search.publicSearch({
 		q: topic,
 		cache: true,
