@@ -7,7 +7,7 @@ import Link, { useLinkStatus } from "next/link";
 
 export default function Home() {
 	return (
-		<div className="flex flex-col text-5xl text-white gap-4">
+		<div className="flex flex-col text-5xl text-white gap-4 font-sans">
 			<Logo />
 			<Link href="/game/new" prefetch={false}>
 				<NewGameCard />

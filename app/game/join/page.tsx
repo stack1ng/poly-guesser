@@ -68,7 +68,7 @@ function JoinGameInner() {
 					router.push(`/game/${data.gameId}`);
 				})}
 			>
-				<h1 className="text-5xl font-medium">Join Game</h1>
+				<h1 className="text-5xl font-medium font-sans">Join Game</h1>
 				<label
 					className="text-foreground hover:text-white transition-colors"
 					htmlFor="username"

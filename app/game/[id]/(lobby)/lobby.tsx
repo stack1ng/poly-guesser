@@ -27,7 +27,7 @@ export function Lobby({ game }: { game: ClientGameState }) {
 			/>
 			{game.players.length} players in game
 			<Button
-				className="text-5xl h-36 p-0 w-full"
+				className="text-5xl h-36 p-0 w-full font-sans"
 				onClick={
 					thisPlayer?.state !== "ready"
 						? () =>
@@ -51,7 +51,7 @@ export function Lobby({ game }: { game: ClientGameState }) {
 				) : (
 					<Link
 						href={`/game/join?gameId=${game.id}`}
-						className="size-full grid place-items-center"
+						className="size-full grid place-items-center font-sans"
 					>
 						Join game
 					</Link>

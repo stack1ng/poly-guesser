@@ -21,7 +21,7 @@ export function InPlay({ game }: { game: ClientGameState }) {
 				: undefined,
 		// when polling, we need to have a stable dependency array somehow
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[JSON.stringify(currentRound), trpcClient]
+		[currentRound?.details.eventSlug, trpcClient]
 	);
 
 	const startTime = currentRound?.details.startTime;

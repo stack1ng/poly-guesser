@@ -30,7 +30,7 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body
-				className={`${limelight.variable} ${geistMono.variable} antialiased`}
+				className={`${limelight.variable} ${geistMono.variable} antialiased font-mono`}
 			>
 				<Toaster />
 				<div className="w-screen h-screen grid place-items-center px-2">

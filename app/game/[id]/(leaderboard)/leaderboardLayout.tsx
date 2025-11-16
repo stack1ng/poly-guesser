@@ -14,7 +14,6 @@ import {
 	Drawer,
 	DrawerClose,
 	DrawerContent,
-	DrawerDescription,
 	DrawerFooter,
 	DrawerHeader,
 	DrawerTitle,
@@ -44,7 +43,12 @@ export default function LeaderboardLayout({
 						<DrawerHeader>
 							<DrawerTitle>Leaderboard</DrawerTitle>
 						</DrawerHeader>
-						<Leaderboard game={game} className="mb-36" />
+						<Leaderboard game={game} />
+						<DrawerFooter className="mb-24">
+							<DrawerClose>
+								<Button>Close</Button>
+							</DrawerClose>
+						</DrawerFooter>
 					</DrawerContent>
 				</Drawer>
 			) : (
@@ -65,7 +69,7 @@ export function Leaderboard({
 	return (
 		<ul className={cn("border m-4 divide-y rounded-lg", className)}>
 			{game.currentRoundIndex !== null && (
-				<div className="text-center text-3xl">
+				<div className="text-center text-3xl font-sans">
 					{game.phase === "in_play"
 						? `Round: ${game.currentRoundIndex + 1}/${game.rounds.length}`
 						: "Results"}

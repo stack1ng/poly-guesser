@@ -138,7 +138,7 @@ export function QuestionPage({
 				<HoverCard>
 					<HoverCardTrigger>
 						<h1
-							className={cn("text-4xl font-bold text-wrap block", {
+							className={cn("text-4xl font-bold font-sans text-wrap block", {
 								"text-blue-500 hover:underline": allPlayersLocked,
 							})}
 						>
