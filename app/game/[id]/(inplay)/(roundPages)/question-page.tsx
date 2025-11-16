@@ -98,8 +98,8 @@ export function QuestionPage({
 					<HoverCardTrigger>
 						<h1 className="text-2xl font-bold">{event.title}</h1>
 					</HoverCardTrigger>
-					<HoverCardContent>
-						<p className="font-mono">{event.description}</p>
+					<HoverCardContent className="w-96">
+						<p className="font-mono text-xs">{event.description}</p>
 					</HoverCardContent>
 				</HoverCard>
 			</div>
