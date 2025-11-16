@@ -26,15 +26,16 @@ export function GameRouter({
 	console.log("game-router game", game);
 
 	const content = useMemo(() => {
+		const topicDisplay = game.topic ? ` - ${game.topic}` : "";
 		switch (game.phase) {
 			case "joinable":
-				document.title = `IN LOBBY - ${game.topic}`;
+				document.title = `IN LOBBY${topicDisplay}`;
 				return <Lobby game={game} />;
 			case "in_play":
-				document.title = `IN PLAY - ${game.topic}`;
+				document.title = `IN PLAY${topicDisplay}`;
 				return <InPlay game={game} />;
 			case "ended":
-				document.title = `GAME OVER - ${game.topic}`;
+				document.title = `GAME OVER${topicDisplay}`;
 				return <Ended game={game} />;
 			default:
 				throw new Error(`Unknown game phase: ${game.phase}`);
