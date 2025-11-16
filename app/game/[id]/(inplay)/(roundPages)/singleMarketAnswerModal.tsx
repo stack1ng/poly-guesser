@@ -23,7 +23,6 @@ import { ScoreMark } from "@/components/ui/score-mark";
 export function SingleMarketAnswerModal({
 	game,
 	markets,
-	isLocked,
 	allPlayersLocked,
 	scoreDelta,
 	setLockFn,
@@ -35,7 +34,7 @@ export function SingleMarketAnswerModal({
 	scoreDelta?: ScoreDelta;
 	setLockFn: Dispatch<SetStateAction<(() => Promise<void>) | undefined>>;
 }) {
-	const [sliderValue, setSliderValue] = useState(0);
+	const [sliderValue, setSliderValue] = useState(50);
 
 	const thisPlayer = useCurrentPlayer(game);
 	if (!thisPlayer) throw new Error("Player not found");
