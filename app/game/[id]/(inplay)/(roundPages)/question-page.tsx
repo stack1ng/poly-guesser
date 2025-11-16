@@ -2,7 +2,7 @@ import { ClientGameState } from "@/lib/game/state-types";
 import { type Event, type Market } from "polymarket-data";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { use, useEffect, useMemo } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import {
 	HoverCard,
 	HoverCardContent,
@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { submitChosenRankings } from "./lockChoices";
 import { useAuth } from "@/lib/auth/useAuth";
 import { useCurrentRound } from "@/lib/game/currentRound";
-import { Lock, LockOpen } from "lucide-react";
+import { Lock, LockOpen, Timer } from "lucide-react";
 import { DvdBounce } from "@/components/dvd-bounce";
 import { useCurrentPlayer } from "@/lib/game/useCurrentPlayer";
 import { readyPlayer } from "@/lib/game/readyAction";
@@ -55,6 +55,30 @@ export function QuestionPage({
 	}, [game.currentRoundIndex]);
 
 	const currentRound = useCurrentRound(game);
+	const [percentLeft, setPercentLeft] = useState(0);
+	useEffect(() => {
+		const endTime = currentRound?.details.endTime;
+		if (!endTime) return;
+
+		const totalDuration = endTime.getTime() - Date.now();
+		const computePercentLeft = () => {
+			const timeLeft = endTime.getTime() - Date.now();
+			setPercentLeft(timeLeft / totalDuration);
+		};
+		computePercentLeft();
+		const interval = setInterval(computePercentLeft, 1000);
+
+		// submit empty choices once our time is up
+		const timeout = setTimeout(() => {
+			clearInterval(interval);
+			setPercentLeft(0);
+			submitChosenRankings(game.id, game.currentRoundIndex!, playerId, []);
+		}, endTime.getTime() - Date.now());
+		return () => {
+			clearTimeout(timeout);
+			clearInterval(interval);
+		};
+	}, [currentRound, game.currentRoundIndex, game.id, playerId]);
 
 	const lockedChoices = useMemo(() => {
 		return currentRound?.choices.find((choice) => choice.playerId === playerId);
@@ -62,6 +86,10 @@ export function QuestionPage({
 
 	const isLocked = useMemo(() => {
 		return lockedChoices !== undefined;
+	}, [lockedChoices]);
+
+	const answersTimedOut = useMemo(() => {
+		return lockedChoices && Object.keys(lockedChoices?.scoreDelta).length === 0;
 	}, [lockedChoices]);
 
 	const allPlayersLocked = useMemo(() => {
@@ -90,7 +118,7 @@ export function QuestionPage({
 
 	console.log("allPlayersLocked", allPlayersLocked);
 	return (
-		<div className="flex flex-col items-center justify-center gap-4">
+		<div className="flex flex-col items-center justify-center gap-4 max-w-4xl mx-auto">
 			<div className="flex items-center gap-4">
 				<Image
 					src={
@@ -104,7 +132,7 @@ export function QuestionPage({
 				<HoverCard>
 					<HoverCardTrigger>
 						<h1
-							className={cn("text-4xl font-bold", {
+							className={cn("text-4xl font-bold text-wrap block", {
 								"text-blue-500 hover:underline": allPlayersLocked,
 							})}
 						>
@@ -157,7 +185,12 @@ export function QuestionPage({
 				Reset
 			</Button>
 			<Button
-				className="w-full h-24 text-2xl bg-sky-500/50 hover:bg-sky-500 border border-sky-500"
+				className={cn(
+					"group relative w-full h-24 text-2xl border border-sky-500 overflow-hidden transition-colors",
+					{
+						"bg-destructive/50 border-destructive": answersTimedOut,
+					}
+				)}
 				onClick={() =>
 					toast.promise(
 						submitChosenRankings(
@@ -175,16 +208,27 @@ export function QuestionPage({
 				}
 				disabled={!lockable}
 			>
+				<div
+					className="absolute inset-y-0 left-0 bg-sky-500/50 group-hover:bg-sky-500 transition-[width] duration-1000"
+					style={{ width: `${Math.max(0, Math.min(1, percentLeft)) * 100}%` }}
+				/>
 				<span
-					className={cn("flex items-center gap-2", {
+					className={cn("relative z-10 flex items-center gap-2", {
 						"animate-bounce": lockable,
 					})}
 				>
 					{lockedChoices ? (
-						<>
-							<Lock className="size-4" />
-							Locked in
-						</>
+						answersTimedOut ? (
+							<>
+								<Timer className="size-4" />
+								You were too slow...
+							</>
+						) : (
+							<>
+								<Lock className="size-4" />
+								Locked in
+							</>
+						)
 					) : (
 						<>
 							<LockOpen className="size-4" />
@@ -292,7 +336,7 @@ export function OutcomeButton({
 					{displayedDelta}
 				</motion.div>
 			)}
-			<div className="absolute bottom-3 left-0 w-full text-center text-base">
+			<div className="absolute bottom-3 left-0 w-full text-center text-base text-sky-500">
 				<TypeWrittenText>{displayedSolution ?? ""}</TypeWrittenText>
 			</div>
 			<Image
