@@ -20,10 +20,11 @@ import { useCurrentPlayer } from "@/lib/game/useCurrentPlayer";
 import { readyPlayer } from "@/lib/game/readyAction";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
 import { shuffleWithSeed } from "@/lib/shuffleWithSeed";
 import Link from "next/link";
 import { TypeWrittenText } from "@/components/TypeWrittenText";
+import { maxSelectionSize } from "@/lib/maxSelectionSize";
+import { getOpenEventMarkets } from "@/lib/getEventMarkets";
 
 export function QuestionPage({
 	game,
@@ -36,12 +37,13 @@ export function QuestionPage({
 	const event = use(eventPromise);
 	// not quite a safe assumption... but it's ok for now
 	const markets = shuffleWithSeed(
-		(event.markets as Market[])
+		getOpenEventMarkets(event)
 			?.sort((a, b) => (b.lastTradePrice ?? 0) - (a.lastTradePrice ?? 0))
 			.slice(0, 4),
 		game.id
 	);
 	if (!markets) throw new Error("Markets not found");
+	console.log("markets", event.markets);
 
 	const { playerId } = useAuth();
 
@@ -68,9 +70,13 @@ export function QuestionPage({
 		);
 	}, [game, currentRound?.choices]);
 
+	const pickCount = useMemo(
+		() => Math.min(maxSelectionSize, markets.length),
+		[markets.length]
+	);
 	const lockable = useMemo(() => {
-		return selectedIdsRanked.length === markets.length && !isLocked;
-	}, [isLocked, markets.length, selectedIdsRanked.length]);
+		return selectedIdsRanked.length === pickCount && !isLocked;
+	}, [isLocked, pickCount, selectedIdsRanked.length]);
 
 	const thisPlayer = useCurrentPlayer(game);
 	if (!thisPlayer) {
@@ -114,6 +120,9 @@ export function QuestionPage({
 								event.title
 							)}
 						</h1>
+						<h2 className="text-muted-foreground font-mono text-lg">
+							Select your top {pickCount} picks
+						</h2>
 					</HoverCardTrigger>
 					<HoverCardContent className="w-96">
 						<p className="font-mono text-xs">{event.description}</p>
@@ -283,7 +292,7 @@ export function OutcomeButton({
 					{displayedDelta}
 				</motion.div>
 			)}
-			<div className="absolute bottom-3 left-4 text-base">
+			<div className="absolute bottom-3 left-0 w-full text-center text-base">
 				<TypeWrittenText>{displayedSolution ?? ""}</TypeWrittenText>
 			</div>
 			<Image

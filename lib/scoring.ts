@@ -1,6 +1,6 @@
-import { Market } from "polymarket-data";
 import { polymarketData } from "./polymarketData";
 import { ScoreDelta } from "@/db/schema";
+import { getOpenEventMarkets } from "./getEventMarkets";
 
 export async function calculateScoreDelta(
 	slug: string,
@@ -8,7 +8,8 @@ export async function calculateScoreDelta(
 ): Promise<ScoreDelta> {
 	const event = await polymarketData.gamma.events.getEventBySlug(slug);
 	if (!event) throw new Error("Event not found: " + slug);
-	const markets = event.markets as Market[];
+
+	const markets = getOpenEventMarkets(event);
 	if (!markets) throw new Error("Markets not found: " + slug);
 	if (markets.length < chosenIdsRanked.length)
 		throw new Error("Not enough markets to choose from");

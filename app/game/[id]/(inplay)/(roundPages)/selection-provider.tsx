@@ -11,20 +11,27 @@ const RankedSelectionContext = createContext<{
 });
 
 export function RankedSelectionProvider({
+	size,
 	children,
 }: {
+	size: number;
 	children: React.ReactNode;
 }) {
 	const [selectedIdsRanked, setSelectedIdsRanked] = useState<string[]>([]);
 
-	const selectId = useCallback((id: string) => {
-		setSelectedIdsRanked((prev) => {
-			if (prev.includes(id)) {
-				return prev.filter((existingId) => existingId !== id);
-			}
-			return [...prev, id];
-		});
-	}, []);
+	const selectId = useCallback(
+		(id: string) => {
+			setSelectedIdsRanked((prev) => {
+				if (prev.includes(id)) {
+					return prev.filter((existingId) => existingId !== id);
+				} else if (prev.length >= size) {
+					return [...prev.slice(0, size - 1), id];
+				}
+				return [...prev, id];
+			});
+		},
+		[size]
+	);
 
 	return (
 		<RankedSelectionContext.Provider

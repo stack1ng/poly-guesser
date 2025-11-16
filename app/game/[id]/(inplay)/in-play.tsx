@@ -6,6 +6,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { useTRPCClient } from "@/trpc/client";
 import { Suspense, useMemo } from "react";
 import { RankedSelectionProvider } from "./(roundPages)/selection-provider";
+import { maxSelectionSize } from "../../../../lib/maxSelectionSize";
 
 export function InPlay({ game }: { game: ClientGameState }) {
 	const currentRound = useCurrentRound(game);
@@ -32,7 +33,7 @@ export function InPlay({ game }: { game: ClientGameState }) {
 	}
 	console.log("in-play game", game);
 	return (
-		<RankedSelectionProvider>
+		<RankedSelectionProvider size={maxSelectionSize}>
 			<ReadySetGo targetTime={startTime}>
 				<ErrorBoundary
 					fallbackRender={({ error }) => <div>Error: {error.message}</div>}
