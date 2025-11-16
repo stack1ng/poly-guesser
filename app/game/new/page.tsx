@@ -6,6 +6,7 @@ import { InferInsertModel } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
 const roundCount = 5;
+export const dynamic = "force-dynamic";
 
 export default async function NewGame() {
 	const events = await pickRandomEvents(roundCount);

@@ -8,7 +8,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { joinGame } from "./joinAction";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth/useAuth";
-import { Suspense } from "react";
 
 type JoinForm = {
 	gameId: string;
@@ -16,14 +15,6 @@ type JoinForm = {
 };
 
 export default function JoinGame() {
-	return (
-		<Suspense fallback={<div>Loading...</div>}>
-			<JoinGameInner />
-		</Suspense>
-	);
-}
-
-function JoinGameInner() {
 	const searchParams = useSearchParams();
 
 	const { username, setUsername, playerId, makePlayer } = useAuth();
