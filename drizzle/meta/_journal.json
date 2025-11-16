@@ -15,6 +15,13 @@
       "when": 1763250355661,
       "tag": "0001_setup-ably-trigger",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1763280836496,
+      "tag": "0002_faithful_ravenous",
+      "breakpoints": true
     }
   ]
 }
