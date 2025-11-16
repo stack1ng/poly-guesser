@@ -21,6 +21,14 @@ export default async function NewGame({
 }) {
 	const { topic } = await searchParams;
 	const events = await pickRandomEvents(roundCount, topic);
+	if (events.length < roundCount)
+		return (
+			<div>
+				Sorry... {"'"}
+				{topic}
+				{"'"} is too specific, we couldn{"'"}t find enough events
+			</div>
+		);
 	const game = await db.transaction(async (tx) => {
 		const [game] = await tx
 			.insert(games)
@@ -55,7 +63,7 @@ async function pickRandomEvents(sampleSize: number, topic = " ") {
 		sort: "volume",
 		ascending: false,
 	});
-	if (!events) throw new Error("No events found");
+	if (!events) return [];
 	const sample = shuffleWithSeed(events, Math.random().toString()).slice(
 		0,
 		sampleSize
