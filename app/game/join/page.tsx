@@ -17,6 +17,7 @@ type JoinForm = {
 
 export default function JoinGame() {
 	return (
+		// useSearchParams requires a suspense boundary to work
 		<Suspense fallback={<div>Loading...</div>}>
 			<JoinGameInner />
 		</Suspense>

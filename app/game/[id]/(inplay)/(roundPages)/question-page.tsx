@@ -22,6 +22,8 @@ import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { shuffleWithSeed } from "@/lib/shuffleWithSeed";
+import Link from "next/link";
+import { TypeWrittenText } from "@/components/TypeWrittenText";
 
 export function QuestionPage({
 	game,
@@ -70,8 +72,6 @@ export function QuestionPage({
 		return selectedIdsRanked.length === markets.length && !isLocked;
 	}, [isLocked, markets.length, selectedIdsRanked.length]);
 
-	const router = useRouter();
-
 	const thisPlayer = useCurrentPlayer(game);
 	if (!thisPlayer) {
 		console.error("Player not found: " + playerId);
@@ -82,6 +82,7 @@ export function QuestionPage({
 		return null;
 	}
 
+	console.log("allPlayersLocked", allPlayersLocked);
 	return (
 		<div className="flex flex-col items-center justify-center gap-4">
 			<div className="flex items-center gap-4">
@@ -96,7 +97,23 @@ export function QuestionPage({
 				/>
 				<HoverCard>
 					<HoverCardTrigger>
-						<h1 className="text-2xl font-bold">{event.title}</h1>
+						<h1
+							className={cn("text-4xl font-bold", {
+								"text-blue-500 hover:underline": allPlayersLocked,
+							})}
+						>
+							{allPlayersLocked ? (
+								<Link
+									href={`https://polymarket.com/event/${event.slug}`}
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									{event.title}
+								</Link>
+							) : (
+								event.title
+							)}
+						</h1>
 					</HoverCardTrigger>
 					<HoverCardContent className="w-96">
 						<p className="font-mono text-xs">{event.description}</p>
@@ -109,8 +126,17 @@ export function QuestionPage({
 						key={market.id}
 						market={market}
 						isLocked={isLocked}
-						displayedDelta={lockedChoices?.scoreDelta?.[market.id]}
+						displayedDelta={
+							allPlayersLocked
+								? lockedChoices?.scoreDelta?.[market.id]
+								: undefined
+						}
 						index={i}
+						displayedSolution={
+							market.lastTradePrice && allPlayersLocked
+								? `${(market.lastTradePrice * 100).toFixed(2)}%`
+								: undefined
+						}
 					/>
 				))}
 			</div>
@@ -199,11 +225,13 @@ export function OutcomeButton({
 	market,
 	isLocked,
 	displayedDelta,
+	displayedSolution,
 	index,
 }: {
 	market: Market;
 	isLocked: boolean;
 	displayedDelta?: number;
+	displayedSolution?: string;
 	index: number;
 }) {
 	const { selectId, selectedIdsRanked } = useRankedSelection();
@@ -255,6 +283,9 @@ export function OutcomeButton({
 					{displayedDelta}
 				</motion.div>
 			)}
+			<div className="absolute bottom-3 left-4 text-base">
+				<TypeWrittenText>{displayedSolution ?? ""}</TypeWrittenText>
+			</div>
 			<Image
 				className="rounded-md"
 				draggable={false}
