@@ -1,14 +1,13 @@
 "use server";
 
 import { db } from "@/db/client";
-import { roundChoices, rounds } from "@/db/schema";
+import { outbox, roundChoices, rounds } from "@/db/schema";
 import {
 	gameChannel,
 	submitChosenRankingsEvent,
 	submitChosenRankingsEventSchema,
 } from "@/lib/game/gameSync";
 import { calculateScoreDelta } from "@/lib/scoring";
-import { withOutbox } from "@/lib/withOutbox";
 import { and, eq } from "drizzle-orm";
 
 export async function submitChosenRankings(
@@ -30,9 +29,9 @@ export async function submitChosenRankings(
 		chosenEventIdsRanked
 	);
 
-	await withOutbox(
-		[
-			{
+	await db.transaction(async (tx) => {
+		const outboxRow = tx.$with("outbox_row").as(() =>
+			tx.insert(outbox).values({
 				channel: gameChannel(gameId),
 				name: submitChosenRankingsEvent,
 				data: submitChosenRankingsEventSchema.parse({
@@ -41,16 +40,14 @@ export async function submitChosenRankings(
 					chosenEventIdsRanked,
 					scoreDelta,
 				}),
-			},
-		],
-		async (tx) => {
-			await tx.insert(roundChoices).values({
-				roundGameId: gameId,
-				roundIndex: roundIndex,
-				playerId: playerId,
-				chosenEventIdsRanked,
-				scoreDelta,
-			});
-		}
-	);
+			})
+		);
+		await tx.with(outboxRow).insert(roundChoices).values({
+			roundGameId: gameId,
+			roundIndex: roundIndex,
+			playerId: playerId,
+			chosenEventIdsRanked,
+			scoreDelta,
+		});
+	});
 }
