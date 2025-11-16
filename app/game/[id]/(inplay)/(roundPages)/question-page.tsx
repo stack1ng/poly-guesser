@@ -130,7 +130,7 @@ export function QuestionPage({
 							game.currentRoundIndex!,
 							playerId,
 							selectedIdsRanked
-						).then(() => router.refresh()),
+						),
 						{
 							loading: "Locking in choices...",
 							success: "Choices locked in!",
@@ -162,14 +162,11 @@ export function QuestionPage({
 				disabled={!(allPlayersLocked && thisPlayer.state !== "ready")}
 				className="w-full h-24 text-2xl p-0"
 				onClick={() => {
-					toast.promise(
-						readyPlayer(game.id, thisPlayer.id).then(() => router.refresh()),
-						{
-							loading: "Readying up...",
-							success: "Ready for next round!",
-							error: "Failed to ready up",
-						}
-					);
+					toast.promise(readyPlayer(game.id, thisPlayer.id), {
+						loading: "Readying up...",
+						success: "Ready for next round!",
+						error: "Failed to ready up",
+					});
 				}}
 			>
 				{allPlayersLocked && thisPlayer.state !== "ready" ? (
