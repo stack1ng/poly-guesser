@@ -9,8 +9,6 @@ import {
 	useMemo,
 	useState,
 } from "react";
-import { motion } from "motion/react";
-import { cn } from "@/lib/utils";
 import { TypeWrittenText } from "@/components/TypeWrittenText";
 import Image from "next/image";
 import { maxSelectionSize } from "@/lib/maxSelectionSize";
