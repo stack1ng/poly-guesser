@@ -31,17 +31,6 @@ export const FALLBACK_TITLES = [
 	"Pop Culture Odds",
 ];
 
-export const FALLBACK_TICKER_CONTENT: TickerContent[] = FALLBACK_TITLES.map(
-	(title, index) => ({
-		id: `fallback-${index}`,
-		title,
-		displayTitle: clampTitle(title, MAX_TITLE_LENGTH),
-		description: undefined,
-		image: undefined,
-		accent: TICKER_COLORS[index % TICKER_COLORS.length],
-	})
-);
-
 export function mapSeriesToTickerContent(
 	series: Series[],
 	palette: readonly string[] = TICKER_COLORS

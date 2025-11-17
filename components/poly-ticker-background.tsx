@@ -82,11 +82,13 @@ const BOUNCE_NEGATIVE_PROBABILITY = 0.35;
 const NEGATIVE_BOUNCE_BONUS = 1.08;
 
 interface PolyTickerBackgroundProps {
+	initialContent: TickerContent[];
 	className?: string;
 	tickerCount?: number;
 }
 
 export function PolyTickerBackground({
+	initialContent,
 	className,
 	tickerCount = 10,
 }: PolyTickerBackgroundProps) {
@@ -109,7 +111,7 @@ export function PolyTickerBackground({
 		resetDisplayed,
 		hasBufferedContent,
 		feedVersion,
-	} = useTickerContentFeed();
+	} = useTickerContentFeed(initialContent);
 
 	const spawnTicker = useCallback((content: TickerContent | null) => {
 		if (!content) return false;

@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-	FALLBACK_TICKER_CONTENT,
 	MAX_TRENDING_POOL,
 	mapSeriesToTickerContent,
 	TickerContent,
@@ -29,7 +28,10 @@ type FeedState = {
 	feedVersion: number;
 };
 
-export function useTickerContentFeed(options?: FeedOptions): FeedState {
+export function useTickerContentFeed(
+	initialContent: TickerContent[],
+	options?: FeedOptions
+): FeedState {
 	const {
 		initialBatchSize = DEFAULT_INITIAL_BATCH_SIZE,
 		subsequentBatchSize = DEFAULT_SUBSEQUENT_BATCH_SIZE,
@@ -40,12 +42,12 @@ export function useTickerContentFeed(options?: FeedOptions): FeedState {
 	const trpc = useTRPC();
 	const trpcClient = useTRPCClient();
 
-	const contentQueueRef = useRef<TickerContent[]>([...FALLBACK_TICKER_CONTENT]);
+	const contentQueueRef = useRef<TickerContent[]>([...initialContent]);
 	const queuedIdsRef = useRef(
 		new Set(contentQueueRef.current.map((content) => content.id))
 	);
 	const displayedIdsRef = useRef(new Set<string>());
-	const allContentRef = useRef<TickerContent[]>([...FALLBACK_TICKER_CONTENT]);
+	const allContentRef = useRef<TickerContent[]>([...initialContent]);
 	const allContentIdsRef = useRef(
 		new Set(allContentRef.current.map((content) => content.id))
 	);

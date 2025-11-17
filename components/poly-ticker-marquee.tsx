@@ -1,25 +1,24 @@
 import Image from "next/image";
 import Marquee from "react-fast-marquee";
-import { FALLBACK_TICKER_CONTENT, TickerContent } from "@/lib/ticker-content";
+import { TickerContent } from "@/lib/ticker-content";
 import { useTickerContentFeed } from "@/hooks/useTickerContentFeed";
 import { useMemo } from "react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 
 type PolyTickerMarqueeProps = {
+	initialContent: TickerContent[];
 	className?: string;
 	speed?: number;
 };
 
 export function PolyTickerMarquee({
+	initialContent,
 	className,
 	speed = 40,
 }: PolyTickerMarqueeProps) {
-	const { contentSnapshot } = useTickerContentFeed({
+	const { contentSnapshot: items } = useTickerContentFeed(initialContent, {
 		maxPoolSize: 10,
 	});
-
-	const items =
-		contentSnapshot.length > 0 ? contentSnapshot : FALLBACK_TICKER_CONTENT;
 
 	const marqueeItems = useMemo(() => {
 		if (!items.length) return [];
