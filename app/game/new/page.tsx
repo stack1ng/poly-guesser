@@ -61,7 +61,7 @@ async function pickRandomEvents(sampleSize: number, topic = " ") {
 		cache: true,
 		events_status: "active",
 		limit_per_type: 50,
-		sort: "volume",
+		sort: "volume_24hr",
 		ascending: false,
 	});
 	if (!events) return [];
