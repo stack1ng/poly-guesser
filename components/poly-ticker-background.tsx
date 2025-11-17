@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { motion } from "motion/react";
+import { motion, useMotionTemplate, useSpring } from "motion/react";
 import {
 	useCallback,
 	useEffect,
@@ -306,18 +306,22 @@ function TickerBadge({ canvasRef, view }: TickerBadgeProps) {
 		setCanvasReady(canvasRef.current !== null);
 	}, [canvasRef]);
 
+	const easedX = useSpring(view.x, LABEL_TRANSITION),
+		easedY = useSpring(view.y - view.height / 2, LABEL_TRANSITION);
+	useEffect(() => {
+		easedX.set(view.x);
+		easedY.set(view.y - view.height / 2);
+	}, [view.x, view.y, view.height, easedX, easedY]);
+
 	return (
 		<motion.div
 			aria-hidden
 			data-canvas-ready={canvasReady}
-			className="pointer-events-none absolute -translate-y-1/2 rounded-full border bg-slate-950/70 text-white/80"
+			className="pointer-events-none absolute rounded-full border bg-slate-950/70 text-white/80 transform-gpu will-change-transform"
 			initial={false}
-			animate={{
-				x: view.x,
-				y: view.y,
-			}}
 			transition={LABEL_TRANSITION}
 			style={{
+				transform: useMotionTemplate`translate(${easedX}px, ${easedY}px)`,
 				width: view.width,
 				height: view.height,
 				borderColor: withAlpha(view.accent, 0.4),
