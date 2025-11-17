@@ -4,6 +4,7 @@ import { z } from "zod";
 import {
 	Event,
 	eventParamsSchema,
+	listSeriesParamsSchema,
 } from "polymarket-data/dist/modules/gamma/schemas";
 
 export const polymarketEventRouter = router({
@@ -13,4 +14,8 @@ export const polymarketEventRouter = router({
 			const { slug, ...params } = p.input;
 			return polymarketData.gamma.events.getEventBySlug(slug, params);
 		}),
+
+	listSeries: publicProcedure.input(listSeriesParamsSchema).query(async (p) => {
+		return await polymarketData.gamma.series.listSeries(p.input);
+	}),
 });

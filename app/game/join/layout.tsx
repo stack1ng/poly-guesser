@@ -10,5 +10,7 @@ export default function Layout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	return <>{children}</>;
+	return (
+		<div className="w-screen h-screen grid place-items-center">{children}</div>
+	);
 }
