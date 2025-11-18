@@ -36,21 +36,14 @@ export default function Home({
 					initialContent={initialContent}
 				/>
 				<Logo className="max-w-96" />
+				<p className="text-foreground font-mono text-sm text-center px-4">
+					PolyGuessr is a fun trivia game where you and your friends go head to
+					head in predicting current events!
+				</p>
 				<div className="flex flex-col gap-4 px-4 max-w-96 items-center">
-					<div className="flex flex-col gap-2">
-						<Link href={newGameHref} prefetch={false}>
-							<NewGameCard />
-						</Link>
-						<Input
-							id="gameTopic"
-							className="font-mono text-foreground focus-visible:ring-0 focus-visible:ring-offset-0 bg-background/50 group-hover:bg-background transition-colors"
-							placeholder="(optional) Enter a topic"
-							required
-							value={gameTopic}
-							onChange={(e) => setGameTopic(e.target.value)}
-							onClick={(e) => e}
-						/>
-					</div>
+					<Link href={newGameHref} prefetch={false}>
+						<NewGameCard />
+					</Link>
 					<Link className="w-full" href="/game/join" prefetch={true}>
 						<Card className="grid place-items-center h-24 w-full border-sky-500 border bg-sky-500/50 hover:bg-sky-500 transition-colors hover:text-white">
 							Join Game
@@ -75,8 +68,9 @@ function NewGameCard() {
 		<Card
 			className={cn(
 				"grid place-items-center aspect-square border-emerald-500 border bg-emerald-500/50 hover:bg-emerald-500 transition-colors hover:text-white",
+				"[animation-delay:-0.5s]",
 				{
-					"animate-pulse": pending,
+					"animate-bounce": pending,
 				}
 			)}
 		>
