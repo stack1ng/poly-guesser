@@ -65,7 +65,7 @@ function JoinGameInner() {
 						})
 						.unwrap();
 
-					router.push(`/game/${data.gameId}`);
+					router.replace(`/game/${data.gameId}?from=join`);
 				})}
 			>
 				<h1 className="text-5xl font-medium font-sans">Join Game</h1>

@@ -5,13 +5,19 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { DvdBounce } from "@/components/dvd-bounce";
 import { useCurrentPlayer } from "@/lib/game/useCurrentPlayer";
-import { redirect } from "next/navigation";
+import { redirect, useSearchParams } from "next/navigation";
 import QRCode from "react-qr-code";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 export function Lobby({ game }: { game: ClientGameState }) {
+	const searchParams = useSearchParams();
 	const thisPlayer = useCurrentPlayer(game);
 	if (!thisPlayer) {
 		if (game.phase === "joinable") {
+			if (searchParams.get("from") === "join") {
+				// the game state wont have the player loaded immediately, so we need to show a loading spinner for a bit
+				return <LoadingSpinner />;
+			}
 			return redirect(`/game/join?gameId=${game.id}`);
 		}
 		// todo: add spectator mode?

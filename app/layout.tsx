@@ -4,6 +4,9 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { TRPCReactProvider } from "@/trpc/client";
+import { PolyTickerBackground } from "@/components/poly-ticker-background";
+import { polymarketData } from "@/lib/polymarketData";
+import { mapSeriesToTickerContent } from "@/lib/ticker-content";
 
 const limelight = Limelight({
 	variable: "--font-limelight",
@@ -29,11 +32,16 @@ export const metadata: Metadata = {
 	},
 };
 
-export default function RootLayout({
+export default async function RootLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
+	const series = await polymarketData.gamma.series.listSeries({
+		limit: 24,
+		offset: 0,
+	});
+	const initialContent = mapSeriesToTickerContent(series);
 	return (
 		<html lang="en">
 			<body
@@ -41,7 +49,13 @@ export default function RootLayout({
 			>
 				<Toaster />
 				<NuqsAdapter>
-					<TRPCReactProvider>{children}</TRPCReactProvider>
+					<TRPCReactProvider>
+						<div className="relative z-10 drop-shadow-lg">{children}</div>
+						<PolyTickerBackground
+							initialContent={initialContent}
+							className="fixed inset-0 hidden md:block"
+						/>
+					</TRPCReactProvider>
 				</NuqsAdapter>
 			</body>
 		</html>

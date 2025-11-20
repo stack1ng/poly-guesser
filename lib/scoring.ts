@@ -2,7 +2,7 @@ import { polymarketData } from "./polymarketData";
 import { ScoreDelta } from "@/db/schema";
 import { getOpenEventMarkets } from "./getEventMarkets";
 import { SubmitChoiceEvent } from "./game/gameSync";
-import { Market } from "polymarket-data";
+import type { Market } from "@/lib/polymarketData";
 
 export async function calculateScoreDelta(
 	slug: string,

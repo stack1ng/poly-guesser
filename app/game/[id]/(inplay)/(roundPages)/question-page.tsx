@@ -1,5 +1,5 @@
 import { ClientGameState } from "@/lib/game/state-types";
-import { type Event } from "polymarket-data";
+import { type Event } from "@/lib/polymarketData";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { use, useEffect, useMemo, useState } from "react";

@@ -1,4 +1,4 @@
-import { Event, Market } from "polymarket-data";
+import type { Event, Market } from "@/lib/polymarketData";
 
 export function getOpenEventMarkets(event: Event) {
 	const markets = event.markets as Market[];

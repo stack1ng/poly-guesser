@@ -1,4 +1,4 @@
-import { Series } from "polymarket-data";
+import type { Series } from "@/lib/polymarketData";
 
 export type TickerContent = {
 	id: string;

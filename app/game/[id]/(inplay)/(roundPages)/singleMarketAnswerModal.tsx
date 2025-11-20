@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { BounceIn } from "@/components/bounce-in";
-import { Market } from "polymarket-data";
+import type { Market } from "@/lib/polymarketData";
 import {
 	SetStateAction,
 	Dispatch,
