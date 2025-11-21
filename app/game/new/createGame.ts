@@ -65,6 +65,7 @@ async function pickRandomEvents(
 						tag_id: +t.id,
 						order: "volume24hr",
 						ascending: false,
+						closed: false,
 					})
 				)
 			)
@@ -74,6 +75,7 @@ async function pickRandomEvents(
 			limit: 50,
 			order: "volume24hr",
 			ascending: false,
+			closed: false,
 		});
 	}
 	if (!events) return [];
