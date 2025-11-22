@@ -22,6 +22,7 @@ import Link from "next/link";
 import { getOpenEventMarkets } from "@/lib/getEventMarkets";
 import { MultiMarketAnswerModal } from "./multiMarketAnswerModal";
 import { SingleMarketAnswerModal } from "./singleMarketAnswerModal";
+import { polymarketUrl } from "@/lib/polymarketUrl";
 
 export function QuestionPage({
 	game,
@@ -132,7 +133,7 @@ export function QuestionPage({
 						>
 							{allPlayersLocked ? (
 								<Link
-									href={`https://polymarket.com/event/${event.slug}`}
+									href={polymarketUrl(`/event/${event.slug}`)}
 									target="_blank"
 									rel="noopener noreferrer"
 								>

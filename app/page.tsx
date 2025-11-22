@@ -6,6 +6,7 @@ import { Link } from "@/components/ui/link";
 import { PolyTickerMarquee } from "@/components/poly-ticker-marquee";
 import { mapSeriesToTickerContent } from "@/lib/ticker-content";
 import { polymarketData } from "@/lib/polymarketData";
+import { polymarketUrl } from "@/lib/polymarketUrl";
 
 // refresh every day
 export const revalidate = 86400;
@@ -46,7 +47,7 @@ export default async function Home() {
 					</Link>
 					<label className="text-foreground font-mono text-sm">
 						Powered by:
-						<Link href="https://polymarket.com" target="_blank">
+						<Link href={polymarketUrl("/")} target="_blank">
 							<PolyMarketLogo className="h-16 bg-[#2E5CFF] fill-white rounded-lg p-3" />
 						</Link>
 					</label>
