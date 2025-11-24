@@ -136,7 +136,9 @@ export function MultiSelect<TItem, TError = DefaultError, TPageParam = number>({
 					</div>
 					<Button
 						variant="ghost"
-						className="rounded-none"
+						className={cn("rounded-none", {
+							"text-destructive hover:text-destructive": selection.length > 0,
+						})}
 						onClick={() => setSelection([])}
 						disabled={selection.length === 0}
 					>
