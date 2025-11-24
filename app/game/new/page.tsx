@@ -12,6 +12,7 @@ import { useTRPCClient } from "@/trpc/client";
 import { Button } from "@/components/ui/button";
 
 import { cn } from "@/lib/utils";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 const topicBufferPageSize = 25;
 
 export default function NewGame() {
@@ -23,6 +24,7 @@ export default function NewGame() {
 	const [search, setSearch] = useState("");
 
 	// roundCount selection handled via Controller below to avoid watch() compiler warnings
+	const [isCreatingGame, setIsCreatingGame] = useState(false);
 
 	return (
 		<div className="w-screen h-screen grid place-items-center">
@@ -30,6 +32,7 @@ export default function NewGame() {
 				<form
 					className="flex flex-col gap-2 w-full"
 					onSubmit={handleSubmit(async (data) => {
+						setIsCreatingGame(true);
 						const [gameId, error] = await createGame(data);
 						if (error) {
 							toast.error(`failed to create game: ${error}`);
@@ -112,7 +115,9 @@ export default function NewGame() {
 							)}
 						/>
 					</label>
-					<Button type="submit">Create Game</Button>
+					<Button type="submit" disabled={isCreatingGame}>
+						{isCreatingGame ? <LoadingSpinner /> : "Create Game"}
+					</Button>
 				</form>
 			</Card>
 		</div>
